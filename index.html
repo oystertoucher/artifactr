@@ -443,7 +443,7 @@ document.getElementById('nextBtn').addEventListener('click', ()=>{
 const emojiFor = { 'Bullseye':'🎯', 'Excellent':'🏆', 'Good guess':'👏', 'Same region':'🎓', 'Way off':'🌫️' };
 document.getElementById('shareBtn').addEventListener('click', ()=>{
   const line = roundResults.map(r=>`${r.display}${emojiFor[r.label]||''}`).join(' ');
-  const text = `Artifactr — ${document.getElementById('dailyDateLabel').textContent}\n${line}\nFinal score: ${total.toLocaleString()}`;
+  const text = `Artifactr — ${document.getElementById('dailyDateLabel').textContent}\n${line}\nFinal score: ${total.toLocaleString()}\nhttps://artifactr.netlify.app/`;
   const confirmEl = document.getElementById('shareConfirm');
   if(navigator.clipboard){
     navigator.clipboard.writeText(text).then(()=>{
