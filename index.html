@@ -90,21 +90,10 @@
 
   /* ---------- Result panel ---------- */
   #result{display:none;}
-  .result-title{text-align:center;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:15px;letter-spacing:0.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:2px;}
-  .seal{
-    width:74px;height:74px;border-radius:50%;border:3px solid var(--brass);
-    display:flex;align-items:center;justify-content:center;flex-direction:column;
-    margin:4px auto 14px;background:radial-gradient(circle at 35% 30%, #f6e6b8, #c9a13b);
-    box-shadow:0 3px 8px rgba(0,0,0,0.25);
-  }
-  .seal .num{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:20px;color:#3a2c0a;}
-  .seal .lbl{font-size:8px;letter-spacing:1px;text-transform:uppercase;color:#3a2c0a;font-weight:700;}
-  .result-label{text-align:center;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--text-dark);margin-bottom:2px;}
-  .result-sub{text-align:center;font-size:12px;color:var(--text-muted);margin-bottom:16px;}
-  .breakdown{display:flex;gap:10px;margin-bottom:16px;}
-  .bd-item{flex:1;background:var(--parchment-2);border:1px solid rgba(36,31,22,0.15);border-radius:4px;padding:10px;text-align:center;}
-  .bd-item .v{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;color:var(--text-dark);}
-  .bd-item .k{font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);font-weight:600;margin-top:2px;}
+  .result-points{text-align:center;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:34px;color:var(--brass);letter-spacing:0.5px;margin:4px 0 6px;}
+  .result-title{text-align:center;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:22px;color:var(--text-dark);margin-bottom:4px;line-height:1.2;}
+  .result-place{text-align:center;font-size:13px;color:var(--text-muted);margin-bottom:2px;letter-spacing:0.2px;}
+  .result-distance{text-align:center;font-size:12px;color:var(--text-muted);margin-bottom:16px;}
   .desc{font-size:13px;line-height:1.6;color:var(--text-dark);margin-bottom:12px;}
   .source{font-size:11px;color:var(--text-muted);margin-bottom:16px;}
   .source a{color:#8a6d21;}
@@ -155,10 +144,19 @@
     <div class="card-body">
       <div id="startScreen">
         <div class="art-frame" style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#d8cba4,#c7b789);">
-          <svg width="64" height="64" viewBox="0 0 64 64" style="opacity:0.55"><path d="M12 12 L52 52 M52 12 L12 52" stroke="#5a4f36" stroke-width="6" stroke-linecap="round"/></svg>
+          <svg width="88" height="88" viewBox="0 0 88 88" style="opacity:0.75">
+            <circle cx="44" cy="44" r="38" fill="none" stroke="#5a4f36" stroke-width="1.5"/>
+            <circle cx="44" cy="44" r="30" fill="none" stroke="#5a4f36" stroke-width="1"/>
+            <path d="M44 8 L50 40 L44 44 L38 40 Z" fill="#8c2417"/>
+            <path d="M44 80 L38 48 L44 44 L50 48 Z" fill="#5a4f36"/>
+            <path d="M8 44 L40 38 L44 44 L40 50 Z" fill="#5a4f36" opacity="0.6"/>
+            <path d="M80 44 L48 50 L44 44 L48 38 Z" fill="#5a4f36" opacity="0.6"/>
+            <circle cx="44" cy="44" r="3.5" fill="#241f16"/>
+            <text x="44" y="20" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="9" fill="#5a4f36" font-weight="700">N</text>
+          </svg>
         </div>
-        <div class="art-title" style="margin-top:16px;">Today's Challenge</div>
-        <div class="instruction" style="margin-top:8px;">Five artifacts, the same for everyone today. Click the map to guess where each was found — closer guesses score higher.</div>
+        <div class="art-title" style="margin-top:16px;">Artifactr #<span id="artifactrNumber"></span></div>
+        <div class="instruction" style="margin-top:8px;">Tap on the map where you think the artifact is from.</div>
         <button id="dailyBtn" style="margin-top:10px;">Play — <span id="dailyDateLabel"></span></button>
         <button id="browseBtn" style="margin-top:10px;background:none;border:1px solid rgba(36,31,22,0.3);color:var(--text-dark);box-shadow:none;">Browse all artifacts (<span id="poolCount"></span>)</button>
       </div>
@@ -176,10 +174,10 @@
       </div>
 
       <div id="result">
+        <div class="result-points" id="resultPoints"></div>
         <div class="result-title" id="resultTitle"></div>
-        <div class="seal"><div class="num" id="sealNum"></div><div class="lbl">pts</div></div>
-        <div class="result-label" id="resultLabel"></div>
-        <div class="result-sub" id="resultSub"></div>
+        <div class="result-place" id="resultPlace"></div>
+        <div class="result-distance" id="resultDistance"></div>
         <div class="desc" id="resultDesc"></div>
         <div class="source">Source: <a id="resultSource" href="#" target="_blank" rel="noopener">Wikipedia</a></div>
         <button id="nextBtn">Next artifact →</button>
@@ -232,8 +230,16 @@ function seededShuffle(arr, rng){
   return a;
 }
 
-const todayStr = new Date().toISOString().slice(0,10);
-document.getElementById('dailyDateLabel').textContent = new Date(todayStr+'T00:00:00Z').toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
+function localDateStr(d){
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+const LAUNCH_DATE = new Date(2026, 7, 9); // Aug 9, 2026 = Artifactr #1. Change this only if you want to reset numbering.
+const now = new Date();
+const todayStr = localDateStr(now);
+const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+const dayNumber = Math.floor((todayMidnight - LAUNCH_DATE) / 86400000) + 1;
+document.getElementById('dailyDateLabel').textContent = now.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
+document.getElementById('artifactrNumber').textContent = dayNumber;
 document.getElementById('poolCount').textContent = ITEMS.length;
 
 document.getElementById('browseBtn').addEventListener('click', ()=>{
@@ -264,8 +270,7 @@ const rotationOrder = seededShuffle(ITEMS.map((_,i)=>i), mulberry32(hashSeed('ar
 const cycleLength = Math.max(1, Math.floor(rotationOrder.length/5));
 
 document.getElementById('dailyBtn').addEventListener('click', ()=>{
-  const dayCount = Math.floor(Date.parse(todayStr+'T00:00:00Z')/86400000);
-  const dayInCycle = dayCount % cycleLength;
+  const dayInCycle = (dayNumber - 1) % cycleLength;
   order = rotationOrder.slice(dayInCycle*5, dayInCycle*5+5);
   startGame();
 });
@@ -370,17 +375,17 @@ document.getElementById('confirmBtn').addEventListener('click', ()=>{
   const bounds = L.latLngBounds([guessLatLng, [item.lat, item.lng]]);
   map.fitBounds(bounds, {padding:[60,60], maxZoom:6});
 
-  let label, sub;
-  if(dist<50){label='Bullseye';sub='Right on the spot.';}
-  else if(dist<300){label='Excellent';sub=`${Math.round(dist)} km away`;}
-  else if(dist<1000){label='Good guess';sub=`${Math.round(dist)} km away`;}
-  else if(dist<3000){label='Same region';sub=`${Math.round(dist)} km away`;}
-  else {label='Way off';sub=`${Math.round(dist)} km away`;}
+  let label;
+  if(dist<50){label='Bullseye';}
+  else if(dist<300){label='Excellent';}
+  else if(dist<1000){label='Good guess';}
+  else if(dist<3000){label='Same region';}
+  else {label='Way off';}
 
+  document.getElementById('resultPoints').textContent = `+${roundScore.toLocaleString()}`;
   document.getElementById('resultTitle').textContent = item.title;
-  document.getElementById('sealNum').textContent = roundScore.toLocaleString();
-  document.getElementById('resultLabel').textContent = label;
-  document.getElementById('resultSub').textContent = `${sub} · true era: ${centuryText(item.century)}`;
+  document.getElementById('resultPlace').textContent = `${item.place} · ${centuryText(item.century)}`;
+  document.getElementById('resultDistance').textContent = `${Math.round(dist).toLocaleString()} km from the actual location`;
   document.getElementById('resultDesc').textContent = item.desc;
   document.getElementById('resultSource').href = item.wiki;
   document.getElementById('lastLabel').textContent = `+${roundScore.toLocaleString()} this round`;
