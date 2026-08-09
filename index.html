@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Artifactr</title>
-<link rel="icon" href="favicon.ico" sizes="any">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" href="favicon.ico?v=2" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png?v=2">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png?v=2">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=2">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -433,7 +433,7 @@ document.getElementById('nextBtn').addEventListener('click', ()=>{
 const emojiFor = { 'Bullseye':'🎯', 'Excellent':'🏆', 'Good guess':'👏', 'Same region':'🎓', 'Way off':'🌫️' };
 document.getElementById('shareBtn').addEventListener('click', ()=>{
   const line = roundResults.map(r=>`${r.display}${emojiFor[r.label]||''}`).join(' ');
-  const text = `Artifactr — ${document.getElementById('dailyDateLabel').textContent}\n${line}\nFinal score: ${total.toLocaleString()}\nhttps://artifactr.netlify.app/`;
+  const text = `https://artifactr.netlify.app/\nArtifactr — ${document.getElementById('dailyDateLabel').textContent}\n${line}\nFinal score: ${total.toLocaleString()}`;
   const confirmEl = document.getElementById('shareConfirm');
   if(navigator.clipboard){
     navigator.clipboard.writeText(text).then(()=>{
