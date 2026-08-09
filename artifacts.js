@@ -461,7 +461,7 @@ const ITEMS = [
     place:"Mexico City, Mexico",
     lat:19.4326, lng:-99.1332, century:16,
     desc:"A massive carved basalt disc depicting Aztec cosmology, buried after the Spanish conquest and rediscovered by chance during repairs to Mexico City's main square."
-  }
+  },
   {
     title:"The Portland Vase",
     wiki:"https://en.wikipedia.org/wiki/Portland_Vase",
@@ -569,7 +569,7 @@ const ITEMS = [
     place:"Kaduna State, Nigeria",
     lat:9.5, lng:8.5, century:-6,
     desc:"A hollow-cast clay figure from one of the earliest known sub-Saharan African civilizations to work iron, first noticed when tin miners began turning them up in the early 20th century."
-  }
+  },
   {
     title:"The Nebra Sky Disc",
     wiki:"https://en.wikipedia.org/wiki/Nebra_sky_disc",
@@ -614,7 +614,7 @@ const ITEMS = [
     place:"Suffolk, England",
     lat:52.35, lng:1.20, century:5,
     desc:"Nearly 15,000 Roman coins plus gold jewelry and silver tableware, buried as the empire's grip on Britain was collapsing and found by a farmer searching for a lost hammer with a metal detector."
-  }
+  },
   {
     title:"An Oracle Bone",
     wiki:"https://en.wikipedia.org/wiki/Oracle_bone",
