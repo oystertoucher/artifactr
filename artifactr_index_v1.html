@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Artifactr</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#10151f;
+    --ink-2:#161d2b;
+    --parchment:#efe6d2;
+    --parchment-2:#e3d7ba;
+    --brass:#c9a13b;
+    --brass-soft:#ddb85a;
+    --line:#3a3120;
+    --good:#5c8a5a;
+    --bad:#a85c46;
+    --text-dark:#241f16;
+    --text-muted:#6b6350;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;overflow:hidden;background:var(--ink);font-family:'Inter',sans-serif;}
+  #app{display:flex;height:100%;width:100%;position:relative;}
+
+  /* ---------- Map ---------- */
+  #mapFrame{flex:1;height:100%;background:#2c1a0e;padding:16px;box-sizing:border-box;position:relative;}
+  #map{width:100%;height:100%;box-shadow:inset 0 0 0 2px #caa666;}
+  #mapFrame::before{content:'';position:absolute;inset:16px;pointer-events:none;box-shadow:inset 0 0 70px 22px rgba(20,10,0,0.55);z-index:600;}
+  #mapFrame::after{content:'';position:absolute;inset:22px;pointer-events:none;border:1px solid rgba(226,185,63,0.35);z-index:600;}
+  .leaflet-container{background:#1b140d;font-family:'Inter',sans-serif;}
+  .leaflet-tile-pane{filter:sepia(0.3) saturate(1.05) brightness(0.85) contrast(1.25);}
+  .leaflet-control-attribution{background:rgba(27,20,13,0.75)!important;color:#c9bda3!important;}
+  .leaflet-control-attribution a{color:#e2c069!important;}
+  .leaflet-control-zoom a{background:#efe6d2!important;color:#241f16!important;border-color:rgba(0,0,0,0.3)!important;}
+
+  /* ---------- Side card ---------- */
+  #card{
+    width:400px;min-width:400px;height:100%;
+    background:var(--parchment);
+    display:flex;flex-direction:column;
+    position:relative;z-index:10;
+    box-shadow:6px 0 24px rgba(0,0,0,0.45);
+    border-right:1px solid var(--line);
+  }
+  .brand{
+    padding:18px 24px 10px;display:flex;align-items:baseline;justify-content:space-between;
+    border-bottom:1px solid rgba(36,31,22,0.15);
+  }
+  .brand h1{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:26px;margin:0;letter-spacing:0.5px;color:var(--text-dark);}
+  .brand .round{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);font-weight:600;}
+  .score-strip{display:flex;justify-content:space-between;padding:10px 24px;background:var(--parchment-2);font-size:12px;letter-spacing:0.5px;text-transform:uppercase;color:var(--text-muted);font-weight:600;border-bottom:1px solid rgba(36,31,22,0.12);}
+  .score-strip b{color:var(--text-dark);font-size:14px;letter-spacing:0;}
+
+  .card-body{flex:1;overflow-y:auto;padding:20px 24px 24px;}
+  .art-frame{
+    width:100%;aspect-ratio:4/3;border-radius:3px;overflow:hidden;
+    background:linear-gradient(135deg,#d8cba4,#c7b789);
+    border:1px solid rgba(36,31,22,0.25);position:relative;
+    box-shadow:0 3px 10px rgba(0,0,0,0.15) inset;
+  }
+  .art-frame img{width:100%;height:100%;object-fit:cover;display:block;}
+  .art-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;color:#5a4f36;font-family:'Cormorant Garamond',serif;font-size:15px;text-align:center;padding:20px;}
+  .art-fallback svg{opacity:0.5;}
+
+  .art-title{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:22px;margin:16px 0 4px;color:var(--text-dark);line-height:1.15;}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 18px;}
+  .chip{font-size:11px;letter-spacing:0.4px;text-transform:uppercase;font-weight:600;color:var(--text-dark);background:rgba(201,161,59,0.22);border:1px solid rgba(201,161,59,0.5);padding:4px 9px;border-radius:20px;}
+
+  .instruction{font-size:13px;color:var(--text-muted);margin-bottom:14px;line-height:1.5;}
+  .instruction b{color:var(--text-dark);}
+
+  input[type=range]{width:100%;accent-color:#a5822c;}
+
+  #confirmBtn{
+    width:100%;padding:13px;border:none;border-radius:3px;background:linear-gradient(180deg,#dcb653,#b98f2e);
+    color:#26200f;font-weight:700;font-size:14px;letter-spacing:0.5px;text-transform:uppercase;cursor:pointer;
+    box-shadow:0 2px 0 #7a5f1e, 0 4px 10px rgba(0,0,0,0.25);transition:transform .08s;
+  }
+  #confirmBtn:disabled{opacity:0.4;cursor:not-allowed;box-shadow:none;}
+  #confirmBtn:not(:disabled):active{transform:translateY(2px);}
+  #dailyBtn, #freeBtn{
+    width:100%;padding:13px;border:none;border-radius:3px;font-weight:700;font-size:13px;letter-spacing:0.3px;cursor:pointer;
+    box-shadow:0 2px 0 #7a5f1e, 0 4px 10px rgba(0,0,0,0.25);
+  }
+  #dailyBtn{background:linear-gradient(180deg,#dcb653,#b98f2e);color:#26200f;}
+  #dailyBtn:active, #freeBtn:active{transform:translateY(2px);}
+
+  /* ---------- Result panel ---------- */
+  #result{display:none;}
+  .result-title{text-align:center;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:15px;letter-spacing:0.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:2px;}
+  .seal{
+    width:74px;height:74px;border-radius:50%;border:3px solid var(--brass);
+    display:flex;align-items:center;justify-content:center;flex-direction:column;
+    margin:4px auto 14px;background:radial-gradient(circle at 35% 30%, #f6e6b8, #c9a13b);
+    box-shadow:0 3px 8px rgba(0,0,0,0.25);
+  }
+  .seal .num{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:20px;color:#3a2c0a;}
+  .seal .lbl{font-size:8px;letter-spacing:1px;text-transform:uppercase;color:#3a2c0a;font-weight:700;}
+  .result-label{text-align:center;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--text-dark);margin-bottom:2px;}
+  .result-sub{text-align:center;font-size:12px;color:var(--text-muted);margin-bottom:16px;}
+  .breakdown{display:flex;gap:10px;margin-bottom:16px;}
+  .bd-item{flex:1;background:var(--parchment-2);border:1px solid rgba(36,31,22,0.15);border-radius:4px;padding:10px;text-align:center;}
+  .bd-item .v{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;color:var(--text-dark);}
+  .bd-item .k{font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);font-weight:600;margin-top:2px;}
+  .desc{font-size:13px;line-height:1.6;color:var(--text-dark);margin-bottom:12px;}
+  .source{font-size:11px;color:var(--text-muted);margin-bottom:16px;}
+  .source a{color:#8a6d21;}
+  #nextBtn{width:100%;padding:13px;border:none;border-radius:3px;background:var(--ink);color:var(--parchment);font-weight:700;font-size:14px;letter-spacing:0.5px;text-transform:uppercase;cursor:pointer;}
+
+  #endScreen{display:none;padding:40px 24px;text-align:center;}
+  #endScreen h2{font-family:'Cormorant Garamond',serif;font-size:30px;color:var(--text-dark);}
+  #endScreen .total{font-family:'Cormorant Garamond',serif;font-size:46px;font-weight:700;color:var(--brass);margin:10px 0;}
+  #endScreen button{margin-top:20px;padding:12px 22px;border:none;border-radius:3px;background:var(--ink);color:var(--parchment);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;cursor:pointer;}
+
+  .pin-hint{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(16,21,31,0.88);color:var(--parchment);font-size:12px;padding:8px 16px;border-radius:20px;letter-spacing:0.3px;z-index:400;pointer-events:none;border:1px solid rgba(201,161,59,0.4);}
+
+  #browsePanel{display:none;position:fixed;inset:0;background:var(--parchment);z-index:2000;overflow-y:auto;}
+  #browseHeader{position:sticky;top:0;background:var(--parchment);display:flex;align-items:center;justify-content:space-between;padding:18px 28px;border-bottom:1px solid rgba(36,31,22,0.15);z-index:1;}
+  #browseHeader h1,#browseHeader h2{font-family:'Cormorant Garamond',serif;font-size:24px;margin:0;color:var(--text-dark);}
+  #browseCloseBtn{padding:8px 16px;border:none;border-radius:3px;background:var(--ink);color:var(--parchment);font-weight:700;font-size:12px;letter-spacing:0.5px;cursor:pointer;}
+  #browseList{max-width:900px;margin:0 auto;padding:20px 28px 60px;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;}
+  .browse-card{background:var(--parchment-2);border:1px solid rgba(36,31,22,0.15);border-radius:4px;overflow:hidden;display:flex;flex-direction:column;}
+  .browse-card img{width:100%;height:140px;object-fit:cover;display:block;background:#d8cba4;}
+  .browse-card .bc-body{padding:10px 12px 14px;}
+  .browse-card .bc-title{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:16px;color:var(--text-dark);margin-bottom:4px;}
+  .browse-card .bc-meta{font-size:11px;color:var(--text-muted);letter-spacing:0.3px;margin-bottom:6px;}
+  .browse-card .bc-clue{font-size:11px;color:var(--text-muted);margin-bottom:6px;}
+  .browse-card a{font-size:11px;color:#8a6d21;}
+
+  @media (max-width:820px){
+    #browseList{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}
+  }
+
+  @media (max-width:820px){
+    #app{flex-direction:column;}
+    #card{width:100%;min-width:0;height:56%;order:2;box-shadow:0 -6px 24px rgba(0,0,0,0.45);border-right:none;border-top:1px solid var(--line);}
+    #mapFrame{height:44%;order:1;padding:10px;}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="card">
+    <div class="brand">
+      <h1>Artifactr</h1>
+      <div class="round" id="roundLabel">Round 1 / 8</div>
+    </div>
+    <div class="score-strip">
+      <div>Total score <b id="totalScore">0</b></div>
+      <div id="lastLabel"></div>
+    </div>
+    <div class="card-body">
+      <div id="startScreen">
+        <div class="art-frame" style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#d8cba4,#c7b789);">
+          <svg width="64" height="64" viewBox="0 0 64 64" style="opacity:0.55"><path d="M12 12 L52 52 M52 12 L12 52" stroke="#5a4f36" stroke-width="6" stroke-linecap="round"/></svg>
+        </div>
+        <div class="art-title" style="margin-top:16px;">Today's Challenge</div>
+        <div class="instruction" style="margin-top:8px;">Five artifacts, the same for everyone today. Click the map to guess where each was found — closer guesses score higher.</div>
+        <button id="dailyBtn" style="margin-top:10px;">Play — <span id="dailyDateLabel"></span></button>
+        <button id="browseBtn" style="margin-top:10px;background:none;border:1px solid rgba(36,31,22,0.3);color:var(--text-dark);box-shadow:none;">Browse all artifacts (<span id="poolCount"></span>)</button>
+      </div>
+
+      <div id="playScreen" style="display:none;">
+        <div class="art-frame">
+          <img id="artImg" src="" alt="" onerror="this.style.display='none'; document.getElementById('artFallback').style.display='flex'; document.getElementById('fallbackTitle').textContent='Image unavailable';">
+          <div class="art-fallback" id="artFallback" style="display:none;">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#5a4f36" stroke-width="1.4"><path d="M3 21h18M5 21V9l7-6 7 6v12M9 21v-6h6v6"/></svg>
+            <span id="fallbackTitle">Image loading...</span>
+          </div>
+        </div>
+        <div class="instruction"><b>Click the map</b> where you think this was found, then confirm.</div>
+        <button id="confirmBtn" disabled>Drop a pin first</button>
+      </div>
+
+      <div id="result">
+        <div class="result-title" id="resultTitle"></div>
+        <div class="seal"><div class="num" id="sealNum"></div><div class="lbl">pts</div></div>
+        <div class="result-label" id="resultLabel"></div>
+        <div class="result-sub" id="resultSub"></div>
+        <div class="desc" id="resultDesc"></div>
+        <div class="source">Source: <a id="resultSource" href="#" target="_blank" rel="noopener">Wikipedia</a></div>
+        <button id="nextBtn">Next artifact →</button>
+      </div>
+
+      <div id="endScreen" style="display:none;">
+        <h2>Round complete</h2>
+        <div class="total" id="finalScore">0</div>
+        <div style="font-size:13px;color:var(--text-muted);">out of a possible <span id="maxScore"></span></div>
+        <button onclick="location.reload()">Play again</button>
+        <button id="shareBtn" style="margin-top:10px;background:var(--brass);color:#26200f;">Share score</button>
+        <div id="shareConfirm" style="font-size:12px;color:var(--text-muted);margin-top:8px;display:none;">Copied to clipboard!</div>
+      </div>
+    </div>
+  </div>
+  <div id="mapFrame"><div id="map"></div></div>
+  <div id="browsePanel">
+    <div id="browseHeader">
+      <h2>All Artifacts</h2>
+      <button id="browseCloseBtn">Close ✕</button>
+    </div>
+    <div id="browseList"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="artifacts.js"></script>
+<script>
+// artifact data now lives in artifacts.js
+
+function hashSeed(str){
+  let h=0;
+  for(let i=0;i<str.length;i++){ h=(h<<5)-h+str.charCodeAt(i); h|=0; }
+  return h;
+}
+function mulberry32(a){
+  return function(){
+    a|=0; a=a+0x6D2B79F5|0;
+    let t=Math.imul(a^a>>>15,1|a);
+    t=t+Math.imul(t^t>>>7,61|t)^t;
+    return((t^t>>>14)>>>0)/4294967296;
+  };
+}
+function seededShuffle(arr, rng){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(rng()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+const todayStr = new Date().toISOString().slice(0,10);
+document.getElementById('dailyDateLabel').textContent = new Date(todayStr+'T00:00:00Z').toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
+document.getElementById('poolCount').textContent = ITEMS.length;
+
+document.getElementById('browseBtn').addEventListener('click', ()=>{
+  const list = document.getElementById('browseList');
+  if(!list.dataset.built){
+    list.innerHTML = ITEMS.map(item => `
+      <div class="browse-card">
+        <img src="${item.img}" alt="" onerror="this.style.display='none'">
+        <div class="bc-body">
+          <div class="bc-title">${item.title}</div>
+          <div class="bc-meta">${centuryText(item.century)} · ${item.lat.toFixed(2)}, ${item.lng.toFixed(2)}</div>
+          <div class="bc-clue">${item.clue.join(' · ')}</div>
+          <a href="${item.wiki}" target="_blank" rel="noopener">Wikipedia →</a>
+        </div>
+      </div>
+    `).join('');
+    list.dataset.built = '1';
+  }
+  document.getElementById('browsePanel').style.display = 'block';
+});
+document.getElementById('browseCloseBtn').addEventListener('click', ()=>{
+  document.getElementById('browsePanel').style.display = 'none';
+});
+
+let order = [], round = 0, total = 0, maxPossible = 0, roundResults = [];
+
+const rotationOrder = seededShuffle(ITEMS.map((_,i)=>i), mulberry32(hashSeed('artifactr-rotation-v1')));
+const cycleLength = Math.max(1, Math.floor(rotationOrder.length/5));
+
+document.getElementById('dailyBtn').addEventListener('click', ()=>{
+  const dayCount = Math.floor(Date.parse(todayStr+'T00:00:00Z')/86400000);
+  const dayInCycle = dayCount % cycleLength;
+  order = rotationOrder.slice(dayInCycle*5, dayInCycle*5+5);
+  startGame();
+});
+
+function startGame(){
+  round = 0; total = 0; roundResults = [];
+  maxPossible = order.length * 5000;
+  document.getElementById('maxScore').textContent = maxPossible.toLocaleString();
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('playScreen').style.display = 'block';
+  loadRound();
+}
+
+const map = L.map('map', {worldCopyJump:true}).setView([20,10], 2);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+  attribution:'&copy; OpenStreetMap contributors &copy; CARTO', maxZoom:20, detectRetina:true
+}).addTo(map);
+
+let guessMarker=null, truthMarker=null, guessLine=null, guessLatLng=null, locked=false;
+const hint = L.DomUtil.create('div','pin-hint');
+hint.textContent = 'Click anywhere on the map to drop your pin';
+document.getElementById('map').appendChild(hint);
+
+const brassIcon = L.divIcon({className:'', html:'<svg width="34" height="34" viewBox="0 0 40 40" style="overflow:visible"><path d="M8 8 Q14 16 12 14 Q22 26 32 32" stroke="#d41f16" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M32 8 Q22 18 26 14 Q16 24 8 32" stroke="#d41f16" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M9 9 Q15 17 13 15" stroke="#a8160f" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7"/><path d="M30 10 Q24 17 27 14" stroke="#a8160f" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7"/><path d="M10 30 L7 35" stroke="#d41f16" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.85"/><path d="M30 30 L34 33" stroke="#d41f16" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.7"/></svg>', iconSize:[34,34], iconAnchor:[17,17]});
+const truthIcon = L.divIcon({className:'', html:'<svg width="34" height="34" viewBox="0 0 40 40" style="overflow:visible"><path d="M8 8 Q14 16 12 14 Q22 26 32 32" stroke="#1c130a" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M32 8 Q22 18 26 14 Q16 24 8 32" stroke="#1c130a" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M9 9 Q15 17 13 15" stroke="#3a2a18" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7"/><path d="M30 10 Q24 17 27 14" stroke="#3a2a18" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7"/><path d="M10 30 L7 35" stroke="#1c130a" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.85"/><path d="M30 30 L34 33" stroke="#1c130a" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.7"/></svg>', iconSize:[34,34], iconAnchor:[17,17]});
+
+map.on('click', e=>{
+  if(locked) return;
+  guessLatLng = e.latlng;
+  if(guessMarker) map.removeLayer(guessMarker);
+  guessMarker = L.marker(e.latlng, {icon:brassIcon}).addTo(map);
+  hint.style.display='none';
+  const btn = document.getElementById('confirmBtn');
+  btn.disabled = false;
+  btn.textContent = 'Confirm guess';
+});
+
+function windingPath(p0, p1, segments=48){
+  const dx = p1[1]-p0[1], dy = p1[0]-p0[0];
+  const dist = Math.sqrt(dx*dx+dy*dy) || 0.0001;
+  const nx = -dy/dist, ny = dx/dist;
+  const bulge = dist*0.22;
+  const c1 = [p0[0]+dy*0.33+ny*bulge, p0[1]+dx*0.33+nx*bulge];
+  const c2 = [p0[0]+dy*0.66-ny*bulge, p0[1]+dx*0.66-nx*bulge];
+  const pts=[];
+  for(let i=0;i<=segments;i++){
+    const t=i/segments;
+    const mt=1-t;
+    const lat = mt*mt*mt*p0[0] + 3*mt*mt*t*c1[0] + 3*mt*t*t*c2[0] + t*t*t*p1[0];
+    const lng = mt*mt*mt*p0[1] + 3*mt*mt*t*c1[1] + 3*mt*t*t*c2[1] + t*t*t*p1[1];
+    pts.push([lat,lng]);
+  }
+  return pts;
+}
+function haversineKm(lat1,lon1,lat2,lon2){
+  const R=6371, toRad=d=>d*Math.PI/180;
+  const dLat=toRad(lat2-lat1), dLon=toRad(lon2-lon1);
+  const a=Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+function centuryText(c){
+  if(c<0) return (Math.abs(c))+(Math.abs(c)===1?'st':(Math.abs(c)===2?'nd':(Math.abs(c)===3?'rd':'th')))+' century BC';
+  return c+(c===1?'st':(c===2?'nd':(c===3?'rd':'th')))+' century AD';
+}
+
+function loadRound(){
+  locked=false;
+  document.getElementById('result').style.display='none';
+  document.getElementById('endScreen').style.display='none';
+  document.getElementById('playScreen').style.display='block';
+  document.getElementById('roundLabel').textContent = `Daily · ${round+1} / ${order.length}`;
+  document.getElementById('totalScore').textContent = total.toLocaleString();
+  document.getElementById('lastLabel').textContent = '';
+  if(guessMarker){map.removeLayer(guessMarker); guessMarker=null;}
+  if(truthMarker){map.removeLayer(truthMarker); truthMarker=null;}
+  if(guessLine){map.removeLayer(guessLine); guessLine=null;}
+  guessLatLng=null;
+  map.setView([20,10], 2);
+  hint.style.display='block';
+
+  const item = ITEMS[order[round]];
+  const img = document.getElementById('artImg');
+  img.style.display='block';
+  document.getElementById('artFallback').style.display='none';
+  img.src = item.img;
+  document.getElementById('fallbackTitle').textContent = 'Loading image…';
+  const btn = document.getElementById('confirmBtn');
+  btn.disabled = true;
+  btn.textContent = 'Drop a pin first';
+}
+
+document.getElementById('confirmBtn').addEventListener('click', ()=>{
+  if(!guessLatLng || locked) return;
+  locked = true;
+  const item = ITEMS[order[round]];
+  const dist = haversineKm(guessLatLng.lat, guessLatLng.lng, item.lat, item.lng);
+  const roundScore = Math.round(5000 * Math.exp(-dist/1500));
+  total += roundScore;
+
+  truthMarker = L.marker([item.lat, item.lng], {icon:truthIcon}).addTo(map);
+  guessLine = L.polyline(windingPath([guessLatLng.lat, guessLatLng.lng], [item.lat, item.lng]), {color:'#6b3a1f', weight:2.5, dashArray:'6,7', opacity:0.9}).addTo(map);
+  const bounds = L.latLngBounds([guessLatLng, [item.lat, item.lng]]);
+  map.fitBounds(bounds, {padding:[60,60], maxZoom:6});
+
+  let label, sub;
+  if(dist<50){label='Bullseye';sub='Right on the spot.';}
+  else if(dist<300){label='Excellent';sub=`${Math.round(dist)} km away`;}
+  else if(dist<1000){label='Good guess';sub=`${Math.round(dist)} km away`;}
+  else if(dist<3000){label='Same region';sub=`${Math.round(dist)} km away`;}
+  else {label='Way off';sub=`${Math.round(dist)} km away`;}
+
+  document.getElementById('resultTitle').textContent = item.title;
+  document.getElementById('sealNum').textContent = roundScore.toLocaleString();
+  document.getElementById('resultLabel').textContent = label;
+  document.getElementById('resultSub').textContent = `${sub} · true era: ${centuryText(item.century)}`;
+  document.getElementById('resultDesc').textContent = item.desc;
+  document.getElementById('resultSource').href = item.wiki;
+  document.getElementById('lastLabel').textContent = `+${roundScore.toLocaleString()} this round`;
+  roundResults.push({label, display: Math.min(100, Math.round(roundScore/50))});
+
+  document.getElementById('playScreen').style.display='none';
+  document.getElementById('result').style.display='block';
+});
+
+document.getElementById('nextBtn').addEventListener('click', ()=>{
+  round++;
+  if(round >= order.length){
+    document.getElementById('result').style.display='none';
+    document.getElementById('endScreen').style.display='block';
+    document.getElementById('finalScore').textContent = total.toLocaleString();
+    return;
+  }
+  loadRound();
+});
+
+const emojiFor = { 'Bullseye':'🎯', 'Excellent':'🏆', 'Good guess':'👏', 'Same region':'🎓', 'Way off':'🌫️' };
+document.getElementById('shareBtn').addEventListener('click', ()=>{
+  const line = roundResults.map(r=>`${r.display}${emojiFor[r.label]||''}`).join(' ');
+  const text = `Artifactr — ${document.getElementById('dailyDateLabel').textContent}\n${line}\nFinal score: ${total.toLocaleString()}`;
+  const confirmEl = document.getElementById('shareConfirm');
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(text).then(()=>{
+      confirmEl.style.display = 'block';
+      setTimeout(()=>confirmEl.style.display='none', 2500);
+    });
+  }
+});
+</script>
+</body>
+</html>
