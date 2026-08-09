@@ -61,7 +61,9 @@
     border:1px solid rgba(36,31,22,0.25);position:relative;
     box-shadow:0 3px 10px rgba(0,0,0,0.15) inset;
   }
-  .art-frame img{width:100%;height:100%;object-fit:contain;display:block;}
+  .art-frame img{width:100%;height:100%;object-fit:contain;display:block;cursor:zoom-in;}
+  .zoom-hint{position:absolute;bottom:8px;right:8px;background:rgba(16,21,31,0.7);color:#efe6d2;border-radius:14px;padding:4px 10px;font-size:10px;letter-spacing:0.3px;display:flex;align-items:center;gap:4px;pointer-events:none;}
+  .zoom-hint svg{width:11px;height:11px;}
   .art-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;color:#5a4f36;font-family:'Cormorant Garamond',serif;font-size:15px;text-align:center;padding:20px;}
   .art-fallback svg{opacity:0.5;}
 
@@ -107,6 +109,11 @@
   .pin-hint{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(16,21,31,0.88);color:var(--parchment);font-size:12px;padding:8px 16px;border-radius:20px;letter-spacing:0.3px;z-index:400;pointer-events:none;border:1px solid rgba(201,161,59,0.4);}
 
   #browsePanel{display:none;position:fixed;inset:0;background:var(--parchment);z-index:2000;overflow-y:auto;}
+
+  #zoomOverlay{display:none;position:fixed;inset:0;background:rgba(10,7,4,0.94);z-index:3000;overflow:hidden;touch-action:none;}
+  #zoomOverlay img{position:absolute;top:50%;left:50%;max-width:none;max-height:none;transform-origin:center center;will-change:transform;user-select:none;-webkit-user-drag:none;}
+  #zoomCloseBtn{position:absolute;top:16px;right:16px;z-index:3001;width:40px;height:40px;border-radius:50%;border:none;background:rgba(239,230,210,0.15);color:#efe6d2;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  #zoomHintText{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:rgba(239,230,210,0.7);font-size:12px;letter-spacing:0.3px;z-index:3001;pointer-events:none;}
   #browseHeader{position:sticky;top:0;background:var(--parchment);display:flex;align-items:center;justify-content:space-between;padding:18px 28px;border-bottom:1px solid rgba(36,31,22,0.15);z-index:1;}
   #browseHeader h1,#browseHeader h2{font-family:'Cormorant Garamond',serif;font-size:24px;margin:0;color:var(--text-dark);}
   #browseCloseBtn{padding:8px 16px;border:none;border-radius:3px;background:var(--ink);color:var(--parchment);font-weight:700;font-size:12px;letter-spacing:0.5px;cursor:pointer;}
@@ -168,12 +175,13 @@
         <div class="art-title" style="margin-top:4px;">Artifactr #<span id="artifactrNumber"></span> — <span id="dailyDateLabel"></span></div>
         <div class="instruction" style="margin-top:8px;">Tap on the map where you think the artifact is from.</div>
         <button id="dailyBtn" style="margin-top:10px;">Play</button>
-        <button id="browseBtn" style="margin-top:10px;background:none;border:1px solid rgba(36,31,22,0.3);color:var(--text-dark);box-shadow:none;">Browse all artifacts (<span id="poolCount"></span>)</button>
+        <button id="browseBtn" style="display:none;margin-top:10px;background:none;border:1px solid rgba(36,31,22,0.3);color:var(--text-dark);box-shadow:none;">Browse all artifacts (<span id="poolCount"></span>)</button>
       </div>
 
       <div id="playScreen" style="display:none;">
         <div class="art-frame">
-          <img id="artImg" src="" alt="" onerror="this.style.display='none'; document.getElementById('artFallback').style.display='flex'; document.getElementById('fallbackTitle').textContent='Image unavailable';">
+          <img id="artImg" src="" alt="" onload="document.getElementById('artFallback').style.display='none';" onerror="this.style.display='none'; document.getElementById('artFallback').style.display='flex'; document.getElementById('fallbackTitle').textContent='Image unavailable';">
+          <div class="zoom-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg>Tap to zoom</div>
           <div class="art-fallback" id="artFallback" style="display:none;">
             <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#5a4f36" stroke-width="1.4"><path d="M3 21h18M5 21V9l7-6 7 6v12M9 21v-6h6v6"/></svg>
             <span id="fallbackTitle">Image loading...</span>
@@ -186,6 +194,7 @@
       <div id="result">
         <div class="art-frame" style="margin-bottom:14px;">
           <img id="resultImg" src="" alt="" onerror="this.style.display='none'">
+          <div class="zoom-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg>Tap to zoom</div>
         </div>
         <div class="result-points" id="resultPoints"></div>
         <div class="result-title" id="resultTitle"></div>
@@ -213,6 +222,11 @@
       <button id="browseCloseBtn">Close ✕</button>
     </div>
     <div id="browseList"></div>
+  </div>
+  <div id="zoomOverlay">
+    <button id="zoomCloseBtn">✕</button>
+    <img id="zoomImg" src="" alt="">
+    <div id="zoomHintText">Scroll or pinch to zoom · drag to pan</div>
   </div>
 </div>
 
@@ -254,6 +268,9 @@ const dayNumber = Math.floor((todayMidnight - LAUNCH_DATE) / 86400000) + 1;
 document.getElementById('dailyDateLabel').textContent = now.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
 document.getElementById('artifactrNumber').textContent = dayNumber;
 document.getElementById('poolCount').textContent = ITEMS.length;
+if(new URLSearchParams(location.search).get('reveal') === 'artifactr'){
+  document.getElementById('browseBtn').style.display = 'block';
+}
 
 document.getElementById('browseBtn').addEventListener('click', ()=>{
   const list = document.getElementById('browseList');
@@ -367,9 +384,9 @@ function loadRound(){
   const item = ITEMS[order[round]];
   const img = document.getElementById('artImg');
   img.style.display='block';
-  document.getElementById('artFallback').style.display='none';
-  img.src = item.img;
   document.getElementById('fallbackTitle').textContent = 'Loading image…';
+  document.getElementById('artFallback').style.display='flex';
+  img.src = item.img;
   const btn = document.getElementById('confirmBtn');
   btn.disabled = true;
   btn.textContent = 'Drop a pin first';
@@ -435,6 +452,111 @@ document.getElementById('shareBtn').addEventListener('click', ()=>{
     });
   }
 });
+// ---------- Image zoom viewer ----------
+(function(){
+  const overlay = document.getElementById('zoomOverlay');
+  const zoomImg = document.getElementById('zoomImg');
+  const closeBtn = document.getElementById('zoomCloseBtn');
+  let scale = 1, tx = 0, ty = 0;
+  let lastDist = null, lastMid = null;
+  let dragging = false, dragStart = null;
+  let lastTapTime = 0;
+
+  function applyTransform(){
+    zoomImg.style.transform = `translate(-50%, -50%) translate(${tx}px, ${ty}px) scale(${scale})`;
+  }
+  function resetZoom(){
+    scale = 1; tx = 0; ty = 0;
+    applyTransform();
+  }
+  function openZoom(src){
+    if(!src) return;
+    zoomImg.src = src;
+    resetZoom();
+    overlay.style.display = 'block';
+  }
+  function closeZoom(){
+    overlay.style.display = 'none';
+  }
+
+  document.getElementById('artImg').addEventListener('click', function(){
+    if(this.style.display !== 'none' && this.src) openZoom(this.src);
+  });
+  document.getElementById('resultImg').addEventListener('click', function(){
+    if(this.style.display !== 'none' && this.src) openZoom(this.src);
+  });
+  closeBtn.addEventListener('click', closeZoom);
+  overlay.addEventListener('click', (e)=>{ if(e.target === overlay) closeZoom(); });
+
+  // Desktop: wheel to zoom
+  overlay.addEventListener('wheel', (e)=>{
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.15 : 0.15;
+    scale = Math.min(5, Math.max(1, scale + delta));
+    if(scale === 1){ tx = 0; ty = 0; }
+    applyTransform();
+  }, {passive:false});
+
+  // Desktop: double-click to toggle zoom
+  zoomImg.addEventListener('dblclick', ()=>{
+    if(scale > 1){ scale = 1; tx = 0; ty = 0; } else { scale = 2.5; }
+    applyTransform();
+  });
+
+  // Desktop: drag to pan when zoomed
+  zoomImg.addEventListener('mousedown', (e)=>{
+    if(scale <= 1) return;
+    dragging = true;
+    dragStart = {x:e.clientX - tx, y:e.clientY - ty};
+    zoomImg.style.cursor = 'grabbing';
+  });
+  window.addEventListener('mousemove', (e)=>{
+    if(!dragging) return;
+    tx = e.clientX - dragStart.x;
+    ty = e.clientY - dragStart.y;
+    applyTransform();
+  });
+  window.addEventListener('mouseup', ()=>{
+    dragging = false;
+    zoomImg.style.cursor = 'grab';
+  });
+
+  // Mobile: pinch to zoom, drag to pan, double-tap to toggle
+  function touchDist(t1, t2){
+    return Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+  }
+  overlay.addEventListener('touchstart', (e)=>{
+    if(e.touches.length === 2){
+      lastDist = touchDist(e.touches[0], e.touches[1]);
+    } else if(e.touches.length === 1){
+      const now = Date.now();
+      if(now - lastTapTime < 300){
+        if(scale > 1){ scale = 1; tx = 0; ty = 0; } else { scale = 2.5; }
+        applyTransform();
+      }
+      lastTapTime = now;
+      dragStart = {x:e.touches[0].clientX - tx, y:e.touches[0].clientY - ty};
+    }
+  }, {passive:true});
+  overlay.addEventListener('touchmove', (e)=>{
+    e.preventDefault();
+    if(e.touches.length === 2 && lastDist){
+      const newDist = touchDist(e.touches[0], e.touches[1]);
+      const ratio = newDist / lastDist;
+      scale = Math.min(5, Math.max(1, scale * ratio));
+      lastDist = newDist;
+      if(scale === 1){ tx = 0; ty = 0; }
+      applyTransform();
+    } else if(e.touches.length === 1 && scale > 1 && dragStart){
+      tx = e.touches[0].clientX - dragStart.x;
+      ty = e.touches[0].clientY - dragStart.y;
+      applyTransform();
+    }
+  }, {passive:false});
+  overlay.addEventListener('touchend', (e)=>{
+    if(e.touches.length < 2) lastDist = null;
+  });
+})();
 </script>
 </body>
 </html>
