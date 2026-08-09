@@ -61,7 +61,7 @@
     border:1px solid rgba(36,31,22,0.25);position:relative;
     box-shadow:0 3px 10px rgba(0,0,0,0.15) inset;
   }
-  .art-frame img{width:100%;height:100%;object-fit:cover;display:block;}
+  .art-frame img{width:100%;height:100%;object-fit:contain;display:block;}
   .art-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;color:#5a4f36;font-family:'Cormorant Garamond',serif;font-size:15px;text-align:center;padding:20px;}
   .art-fallback svg{opacity:0.5;}
 
@@ -174,6 +174,9 @@
       </div>
 
       <div id="result">
+        <div class="art-frame" style="margin-bottom:14px;">
+          <img id="resultImg" src="" alt="" onerror="this.style.display='none'">
+        </div>
         <div class="result-points" id="resultPoints"></div>
         <div class="result-title" id="resultTitle"></div>
         <div class="result-place" id="resultPlace"></div>
@@ -367,7 +370,8 @@ document.getElementById('confirmBtn').addEventListener('click', ()=>{
   locked = true;
   const item = ITEMS[order[round]];
   const dist = haversineKm(guessLatLng.lat, guessLatLng.lng, item.lat, item.lng);
-  const roundScore = Math.round(5000 * Math.exp(-dist/1500));
+  const PERFECT_RADIUS_KM = 25; // guesses within this radius score the full 5000 — adjust to taste
+  const roundScore = dist <= PERFECT_RADIUS_KM ? 5000 : Math.round(5000 * Math.exp(-(dist - PERFECT_RADIUS_KM)/1500));
   total += roundScore;
 
   truthMarker = L.marker([item.lat, item.lng], {icon:truthIcon}).addTo(map);
@@ -382,6 +386,7 @@ document.getElementById('confirmBtn').addEventListener('click', ()=>{
   else if(dist<3000){label='Same region';}
   else {label='Way off';}
 
+  document.getElementById('resultImg').src = item.img;
   document.getElementById('resultPoints').textContent = `+${roundScore.toLocaleString()}`;
   document.getElementById('resultTitle').textContent = item.title;
   document.getElementById('resultPlace').textContent = `${item.place} · ${centuryText(item.century)}`;
