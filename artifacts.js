@@ -462,4 +462,193 @@ const ITEMS = [
     lat:19.4326, lng:-99.1332, century:16,
     desc:"A massive carved basalt disc depicting Aztec cosmology, buried after the Spanish conquest and rediscovered by chance during repairs to Mexico City's main square."
   }
+  {
+    title:"The Portland Vase",
+    wiki:"https://en.wikipedia.org/wiki/Portland_Vase",
+    img:"https://commons.wikimedia.org/wiki/Special:FilePath/Portland Vase.jpg",
+    clue:["Roman Empire","Cameo glass"],
+    place:"Rome, Italy",
+    lat:41.9028, lng:12.4964, century:1,
+    desc:"A cobalt-blue glass vase carved in white cameo relief, first recorded in Rome around 1600. In 1845 a drunken museum visitor smashed it to pieces — it has since been painstakingly reconstructed three times."
+  },
+  {
+    title:"The Vindolanda Tablets",
+    wiki:"https://en.wikipedia.org/wiki/Vindolanda_tablets",
+    img:"https://commons.wikimedia.org/wiki/Special:FilePath/Vindolanda tablets 1.jpg",
+    clue:["Roman Britain","Ink on wood"],
+    place:"Northumberland, England",
+    lat:54.9906, lng:-2.3608, century:2,
+    desc:"Postcard-sized wooden leaves bearing everyday Latin correspondence from a Roman fort near Hadrian's Wall, including a birthday party invitation — the oldest surviving document written in Latin by a woman."
+  },
+  {
+    title:"The Boscoreale Treasure",
+    wiki:"https://en.wikipedia.org/wiki/Boscoreale_Treasure",
+    img:"https://commons.wikimedia.org/wiki/Special:FilePath/Boscoreale Treasure silver head (BM).JPG",
+    clue:["Roman Empire","Silver"],
+    place:"Boscoreale, Italy",
+    lat:40.7622, lng:14.4906, century:1,
+    desc:"Over a hundred pieces of fine Roman silverware, buried in a wine-pressing room when Vesuvius erupted in 79 AD and not rediscovered until 1895."
+  },
+  {
+    title:"The Cross of Cong",
+    wiki:"https://en.wikipedia.org/wiki/Cross_of_Cong",
+    img:"https://commons.wikimedia.org/wiki/Special:FilePath/Cross of Cong in the National Museum of Ireland.jpg",
+    clue:["Medieval Ireland","Oak, gold, silver, niello"],
+    place:"Cong, Ireland",
+    lat:53.5417, lng:-9.2833, century:12,
+    desc:"A processional cross made to hold a fragment of the True Cross, commissioned by a High King of Ireland for a cathedral before later moving to the abbey that gave it its name."
+  },
+  {
+    title:"The Blue Qur'an",
+    wiki:"https://en.wikipedia.org/wiki/Blue_Quran",
+    img:"https://commons.wikimedia.org/wiki/Special:FilePath/Der blaue Koran,Kairouan.JPG",
+    clue:["Islamic Golden Age","Gold ink on indigo-dyed vellum"],
+    place:"Kairouan, Tunisia",
+    lat:35.6781, lng:10.0963, century:9,
+    desc:"Gold Kufic script on parchment dyed deep indigo blue, among the most luxurious manuscripts to survive from the early Islamic world. Scholars still debate whether it was made in Tunisia or further east."
+  },
+  {
+    title:"Newton's Principia Mathematica",
+    wiki:"https://en.wikipedia.org/wiki/Philosophiae_Naturalis_Principia_Mathematica",
+    img:"https://commons.wikimedia.org/wiki/Special:FilePath/NewtonsPrincipia.jpg",
+    clue:["Scientific Revolution","Ink on paper"],
+    place:"Cambridge, England",
+    lat:52.2043, lng:0.1149, century:17,
+    desc:"The book that laid out the laws of motion and universal gravitation, funded and pushed to publication by Newton's friend Edmond Halley after Newton nearly abandoned the project."
+  },
+  {
+    title:"An Armillary Sphere",
+    wiki:"https://en.wikipedia.org/wiki/Armillary_sphere",
+    img:"https://commons.wikimedia.org/wiki/Special:FilePath/Armillary sphere c 1450, Whipple Museum, Cambridge.jpg",
+    clue:["Renaissance astronomy","Brass rings"],
+    place:"Cambridge, England",
+    lat:52.2043, lng:0.1149, century:15,
+    desc:"A model of interlocking rings representing the celestial sphere, used to teach and calculate the positions of the sun, moon, and stars centuries before the telescope existed."
+  },
+  {
+    title:"The Star-Spangled Banner",
+    wiki:"https://en.wikipedia.org/wiki/Star-Spangled_Banner_(flag)",
+    img:"https://commons.wikimedia.org/wiki/Special:FilePath/Star Spangled Banner Flag on display at the Smithsonian's National Museum of History and Technology, around 1964.jpg",
+    clue:["War of 1812","Wool and cotton"],
+    place:"Baltimore, USA",
+    lat:39.2627, lng:-76.5800, century:19,
+    desc:"The garrison flag that flew over Fort McHenry through a night of British naval bombardment, inspiring the poem that later became the American national anthem."
+  },
+  {
+    title:"The Declaration of Independence",
+    wiki:"https://en.wikipedia.org/wiki/United_States_Declaration_of_Independence",
+    img:"https://commons.wikimedia.org/wiki/Special:FilePath/Engrossed Declaration of Independence, front.jpg",
+    clue:["American Revolution","Ink on parchment"],
+    place:"Philadelphia, USA",
+    lat:39.9483, lng:-75.1503, century:18,
+    desc:"The hand-lettered parchment copy signed by delegates to the Continental Congress, now so faded from over a century of light exposure that it's kept permanently dim to preserve what remains."
+  },
+  {
+    title:"A Folsom Point",
+    wiki:"https://en.wikipedia.org/wiki/Folsom_point",
+    img:"https://commons.wikimedia.org/wiki/Special:FilePath/002 Folsom.jpg",
+    clue:["Folsom tradition","Fluted chert"],
+    place:"Folsom, New Mexico",
+    lat:36.8492, lng:-103.9036, century:-90,
+    desc:"A finely fluted spear point found lodged between the ribs of an extinct species of bison, proof that humans had hunted in the Americas thousands of years earlier than most scientists had believed."
+  },
+  {
+    title:"The Swimming Reindeer",
+    wiki:"https://en.wikipedia.org/wiki/Swimming_Reindeer",
+    img:"https://commons.wikimedia.org/wiki/Special:FilePath/Swimming reindeerDSCF6976.jpg",
+    clue:["Magdalenian culture","Carved mammoth ivory"],
+    place:"Montastruc, France",
+    lat:44.13, lng:1.63, century:-110,
+    desc:"Two reindeer carved nose-to-tail from a single mammoth tusk, found in two pieces in 1866 — it took almost forty years before anyone realized the fragments fit together."
+  },
+  {
+    title:"A Nok Terracotta Figure",
+    wiki:"https://en.wikipedia.org/wiki/Nok_culture",
+    img:"https://commons.wikimedia.org/wiki/Special:FilePath/Image of Nok Terracotta.jpg",
+    clue:["Nok culture","Fired terracotta"],
+    place:"Kaduna State, Nigeria",
+    lat:9.5, lng:8.5, century:-6,
+    desc:"A hollow-cast clay figure from one of the earliest known sub-Saharan African civilizations to work iron, first noticed when tin miners began turning them up in the early 20th century."
+  }
+  {
+    title:"The Nebra Sky Disc",
+    wiki:"https://en.wikipedia.org/wiki/Nebra_sky_disc",
+    img:"https://commons.wikimedia.org/wiki/Special:FilePath/Nebra disc 1.jpg",
+    clue:["Bronze Age Europe","Bronze with gold inlay"],
+    place:"Nebra, Germany",
+    lat:51.28, lng:11.55, century:-17,
+    desc:"A bronze disc inlaid with gold stars, sun, and crescent moon — the oldest known concrete depiction of the cosmos anywhere in the world. Looters dug it up and sold it on the black market before police recovered it in a sting."
+  },
+  {
+    title:"The Alfred Jewel",
+    wiki:"https://en.wikipedia.org/wiki/Alfred_Jewel",
+    img:"https://commons.wikimedia.org/wiki/Special:FilePath/Alfred Jewel.jpg",
+    clue:["Anglo-Saxon England","Gold, enamel, rock crystal"],
+    place:"Somerset, England",
+    lat:51.0833, lng:-3.0333, century:9,
+    desc:"A teardrop of gold and enamel inscribed 'Alfred ordered me made,' likely the handle of a pointer for following text while reading — commissioned by Alfred the Great himself."
+  },
+  {
+    title:"The Lewis Chessmen",
+    wiki:"https://en.wikipedia.org/wiki/Lewis_chessmen",
+    img:"https://commons.wikimedia.org/wiki/Special:FilePath/Lewis Chessman, British Museum.jpg",
+    clue:["Norse medieval culture","Carved walrus ivory"],
+    place:"Isle of Lewis, Scotland",
+    lat:58.2064, lng:-7.0264, century:12,
+    desc:"Wide-eyed kings, queens, and berserk warders biting their shields, carved from walrus ivory and found buried in a sandbank — nobody knows why nearly 100 pieces ended up on a remote Scottish island."
+  },
+  {
+    title:"The Mold Gold Cape",
+    wiki:"https://en.wikipedia.org/wiki/Mold_gold_cape",
+    img:"https://commons.wikimedia.org/wiki/Special:FilePath/Gold Mold Cape - British Museum - Joy of Museums.jpg",
+    clue:["Bronze Age Britain","Sheet gold"],
+    place:"Flintshire, Wales",
+    lat:53.1667, lng:-3.1333, century:-18,
+    desc:"A ceremonial cape hammered from a single sheet of gold, found crushed inside a burial mound quarrymen nicknamed 'Goblins' Hill.' Its owner's body had almost entirely decayed away."
+  },
+  {
+    title:"The Hoxne Hoard",
+    wiki:"https://en.wikipedia.org/wiki/Hoxne_Hoard",
+    img:"https://commons.wikimedia.org/wiki/Special:FilePath/Hoxne Hoard 24.jpg",
+    clue:["Late Roman Britain","Gold and silver"],
+    place:"Suffolk, England",
+    lat:52.35, lng:1.20, century:5,
+    desc:"Nearly 15,000 Roman coins plus gold jewelry and silver tableware, buried as the empire's grip on Britain was collapsing and found by a farmer searching for a lost hammer with a metal detector."
+  }
+  {
+    title:"An Oracle Bone",
+    wiki:"https://en.wikipedia.org/wiki/Oracle_bone",
+    img:"https://commons.wikimedia.org/wiki/Special:FilePath/Oracle bone from the Shang dynasty.jpg",
+    clue:["Shang Dynasty","Inscribed ox bone or turtle shell"],
+    place:"Anyang, China",
+    lat:36.1256, lng:114.3086, century:-13,
+    desc:"A bone or shell heated until it cracked, then read by diviners for the Shang royal court — the cracks and questions scratched beside them are the earliest confirmed form of Chinese writing."
+  },
+  {
+    title:"A Pillar Edict of Ashoka",
+    wiki:"https://en.wikipedia.org/wiki/Pillars_of_Ashoka",
+    img:"https://commons.wikimedia.org/wiki/Special:FilePath/6thPillarOfAshoka.JPG",
+    clue:["Mauryan Empire","Carved sandstone"],
+    place:"Meerut, India",
+    lat:28.9845, lng:77.7064, century:-3,
+    desc:"A fragment inscribed with one of dozens of edicts an emperor had carved across his realm after a bloody war left him so remorseful he converted to Buddhism and renounced further conquest."
+  },
+  {
+    title:"A Roman Denarius",
+    wiki:"https://en.wikipedia.org/wiki/Denarius",
+    img:"https://commons.wikimedia.org/wiki/Special:FilePath/Ancient Roman Silver Denarius Depicting Emperor Caracalla (198-217 CE).jpg",
+    clue:["Roman Empire","Struck silver"],
+    place:"Rome, Italy",
+    lat:41.9028, lng:12.4964, century:3,
+    desc:"The standard silver coin of Rome for over four centuries, stamped with the emperor's portrait and carried by soldiers and merchants from Britain to the Persian frontier."
+  },
+  {
+    title:"The Book of Kells",
+    wiki:"https://en.wikipedia.org/wiki/Book_of_Kells",
+    img:"https://commons.wikimedia.org/wiki/Special:FilePath/KellsFol033rCarpetPage v2.jpg",
+    clue:["Celtic Christian art","Ink and pigment on vellum"],
+    place:"Kells, Ireland",
+    lat:53.7247, lng:-6.8794, century:8,
+    desc:"An illuminated gospel book so densely decorated that a single page can take weeks to fully examine, likely begun by monks on the Scottish island of Iona and finished after Viking raids forced them to flee to Ireland."
+  }
 ];
