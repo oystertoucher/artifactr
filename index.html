@@ -370,7 +370,7 @@ document.getElementById('confirmBtn').addEventListener('click', ()=>{
   locked = true;
   const item = ITEMS[order[round]];
   const dist = haversineKm(guessLatLng.lat, guessLatLng.lng, item.lat, item.lng);
-  const PERFECT_RADIUS_KM = 25; // guesses within this radius score the full 5000 — adjust to taste
+  const PERFECT_RADIUS_KM = 50; // guesses within this radius score the full 5000 — adjust to taste
   const roundScore = dist <= PERFECT_RADIUS_KM ? 5000 : Math.round(5000 * Math.exp(-(dist - PERFECT_RADIUS_KM)/1500));
   total += roundScore;
 
@@ -386,7 +386,9 @@ document.getElementById('confirmBtn').addEventListener('click', ()=>{
   else if(dist<3000){label='Same region';}
   else {label='Way off';}
 
-  document.getElementById('resultImg').src = item.img;
+  const resultImg = document.getElementById('resultImg');
+  resultImg.style.display = 'block';
+  resultImg.src = item.img;
   document.getElementById('resultPoints').textContent = `+${roundScore.toLocaleString()}`;
   document.getElementById('resultTitle').textContent = item.title;
   document.getElementById('resultPlace').textContent = `${item.place} · ${centuryText(item.century)}`;
