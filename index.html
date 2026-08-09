@@ -250,7 +250,7 @@ document.getElementById('dailyDateLabel').textContent = now.toLocaleDateString(u
 document.getElementById('artifactrNumber').textContent = dayNumber;
 document.getElementById('poolCount').textContent = ITEMS.length;
 
-const START_ARTWORK = ['logo1.jpeg','logo2.jpeg','logo3.jpeg','logo4.jpeg','logo5.jpeg','logo6.jpeg','logo7.jpeg','logo8.jpeg'];
+const START_ARTWORK = ['logo1tp.png','logo2tp.png','logo3tp.png','logo4tp.png','logo5tp.png','logo6tp.png','logo7tp.png','logo8tp.png'];
 const artworkIndex = ((dayNumber - 1) % START_ARTWORK.length + START_ARTWORK.length) % START_ARTWORK.length;
 document.getElementById('startArt').src = START_ARTWORK[artworkIndex];
 
