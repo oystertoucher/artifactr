@@ -288,7 +288,7 @@ document.getElementById('dailyDateLabel').textContent = now.toLocaleDateString(u
 document.getElementById('artifactrNumber').textContent = dayNumber;
 document.getElementById('poolCount').textContent = ITEMS.length;
 
-const START_ARTWORK = ['logo1tp.png','logo2tp.png','logo3tp.png','logo4tp.png','logo5tp.png','logo6tp.png','logo7tp.png','logo8tp.png'];
+const START_ARTWORK = ['logo1tp.webp','logo2tp.webp','logo3tp.webp','logo4tp.webp','logo5tp.webp','logo6tp.webp','logo7tp.webp','logo8tp.webp'];
 const artworkIndex = ((dayNumber - 1) % START_ARTWORK.length + START_ARTWORK.length) % START_ARTWORK.length;
 document.getElementById('startArt').src = START_ARTWORK[artworkIndex];
 
@@ -464,7 +464,7 @@ document.getElementById('nextBtn').addEventListener('click', ()=>{
 const emojiFor = { 'Bullseye':'🎯', 'Excellent':'🏆', 'Good guess':'👏', 'Same region':'🎓', 'Way off':'🌫️' };
 document.getElementById('shareBtn').addEventListener('click', ()=>{
   const line = roundResults.map(r=>`${r.display}${emojiFor[r.label]||''}`).join(' ');
-  const text = `https://artifactr.vercel.app/\nArtifactr — ${document.getElementById('dailyDateLabel').textContent}\n${line}\nFinal score: ${total.toLocaleString()}`;
+  const text = `Artifactr — ${document.getElementById('dailyDateLabel').textContent}\n${line}\nFinal score: ${total.toLocaleString()}\nhttps://artifactr.vercel.app/`;
   const confirmEl = document.getElementById('shareConfirm');
   if(navigator.clipboard){
     navigator.clipboard.writeText(text).then(()=>{
