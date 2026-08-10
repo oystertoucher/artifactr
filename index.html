@@ -155,11 +155,14 @@
       border-radius:0;padding:14px 16px;
       box-shadow:0 -4px 12px rgba(0,0,0,0.25);
     }
+
+    #app.on-start-screen #mapFrame{display:none;}
+    #app.on-start-screen #card{height:100%;}
   }
 </style>
 </head>
 <body>
-<div id="app">
+<div id="app" class="on-start-screen">
   <div id="card">
     <div class="brand">
       <h1>Artifactr</h1>
@@ -318,6 +321,8 @@ function startGame(){
   document.getElementById('maxScore').textContent = maxPossible.toLocaleString();
   document.getElementById('startScreen').style.display = 'none';
   document.getElementById('playScreen').style.display = 'block';
+  document.getElementById('app').classList.remove('on-start-screen');
+  setTimeout(()=>map.invalidateSize(), 0);
   loadRound();
 }
 
