@@ -101,6 +101,7 @@
   .result-place{text-align:center;font-size:13px;color:var(--text-muted);margin-bottom:2px;letter-spacing:0.2px;}
   .result-distance{text-align:center;font-size:12px;color:var(--text-muted);margin-bottom:16px;}
   .desc{font-size:13px;line-height:1.6;color:var(--text-dark);margin-bottom:12px;}
+  .scroll-cue{display:none;}
   .source{font-size:11px;color:var(--text-muted);margin-bottom:16px;}
   .source a{color:#8a6d21;}
   #nextBtn{width:100%;padding:13px;border:none;border-radius:3px;background:var(--ink);color:var(--parchment);font-weight:700;font-size:14px;letter-spacing:0.5px;text-transform:uppercase;cursor:pointer;}
@@ -151,9 +152,21 @@
     .result-title{font-size:19px;}
 
     #confirmBtn, #nextBtn{
-      position:sticky;bottom:8px;
-      padding:12px;font-size:13px;
+      position:sticky;bottom:8px;display:block;
+      width:auto;min-width:0;
+      padding:11px 22px;font-size:13px;
+      margin-left:auto;margin-right:auto;
       box-shadow:0 4px 14px rgba(0,0,0,0.35);
+    }
+
+    .scroll-cue{
+      display:block;text-align:center;font-size:11px;letter-spacing:0.4px;
+      color:var(--text-muted);opacity:0.75;margin:2px 0 8px;
+      animation:cueBounce 1.6s ease-in-out infinite;
+    }
+    @keyframes cueBounce{
+      0%,100%{transform:translateY(0);opacity:0.5;}
+      50%{transform:translateY(3px);opacity:0.9;}
     }
 
     #app.on-start-screen #mapFrame{display:none;}
@@ -201,6 +214,7 @@
           <img id="resultImg" src="" alt="" onerror="this.style.display='none'">
           <div class="zoom-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg>Tap to zoom</div>
         </div>
+        <div class="scroll-cue">▼ scroll for details ▼</div>
         <div class="result-points" id="resultPoints"></div>
         <div class="result-title" id="resultTitle"></div>
         <div class="result-place" id="resultPlace"></div>
