@@ -230,7 +230,7 @@
         <div style="font-size:13px;color:var(--text-muted);">out of a possible <span id="maxScore"></span></div>
         <button onclick="location.reload()">Play again</button>
         <button id="shareBtn" style="margin-top:10px;background:var(--brass);color:#26200f;">Share score</button>
-        <div id="shareConfirm" style="font-size:12px;color:var(--text-muted);margin-top:8px;display:none;">Copied to clipboard!</div>
+        <div id="shareConfirm" style="font-size:12px;color:var(--text-muted);margin-top:8px;display:none;">Copied! Paste it into Messages, Notes, wherever you like.</div>
       </div>
     </div>
   </div>
@@ -466,13 +466,10 @@ document.getElementById('shareBtn').addEventListener('click', ()=>{
   const line = roundResults.map(r=>`${r.display}${emojiFor[r.label]||''}`).join(' ');
   const text = `https://artifactr.vercel.app/\nArtifactr — ${document.getElementById('dailyDateLabel').textContent}\n${line}\nFinal score: ${total.toLocaleString()}`;
   const confirmEl = document.getElementById('shareConfirm');
-
-  if(navigator.share){
-    navigator.share({text}).catch(()=>{ /* user cancelled the share sheet — not an error */ });
-  } else if(navigator.clipboard){
+  if(navigator.clipboard){
     navigator.clipboard.writeText(text).then(()=>{
       confirmEl.style.display = 'block';
-      setTimeout(()=>confirmEl.style.display='none', 2500);
+      setTimeout(()=>confirmEl.style.display='none', 3000);
     });
   }
 });
